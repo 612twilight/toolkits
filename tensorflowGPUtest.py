@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 
 print(tf.__version__)
 
-def load_data(path="mnist.npz"):
+def load_data(path="data/mnist.npz"):
     with np.load(path) as f:
         x_train, y_train = f['x_train'], f['y_train']
         x_test, y_test = f['x_test'], f['y_test']
@@ -51,3 +51,5 @@ model.compile(optimizer='adam',
 model.fit(x_train, y_train, epochs=50)
 
 model.evaluate(x_test, y_test, verbose=2)
+
+from tensorflow.keras.losses import sparse_categorical_crossentropy
