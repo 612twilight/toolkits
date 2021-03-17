@@ -53,7 +53,7 @@ def transformers_tokenizer_multi_input():
     print(type(inputs.attention_mask))
 
     inputs = tokenizer(text=["你好，世界！Hello world!", "你好，世世世世世世！Hello world!"], return_tensors="pt", padding=True)
-    print("2"*100)
+    print("2" * 100)
     print(inputs)
     print(inputs.input_ids.size())
     print(inputs.token_type_ids.size())
@@ -84,14 +84,29 @@ def transformers_convert_to_id():
 
 def transformer_tokenizer_max_len():
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
-    inputs = tokenizer(text=["你好，世界！Hello world!"], return_tensors="pt", padding=True, max_length=5)
+    inputs = tokenizer(text="你好，世界！Hello world!" * 500, return_tensors="pt", padding="max_length", max_length=10,
+                       truncation=True)
     print(inputs)
     print(inputs.input_ids.size())
+    print(inputs.token_type_ids.size())
+    print(inputs.attention_mask.size())
+
+    inputs = tokenizer(text=["你好，世界！Hello world!", "你好，世界！Hello world!", "你好，世界！Hello world!"], return_tensors="pt",
+                       padding="max_length", max_length=512,
+                       truncation=True)
+
+    print(inputs)
+    print(inputs.input_ids.size())
+    print(inputs.token_type_ids.size())
+    print(inputs.attention_mask.size())
 
     text = "你好，世界！Hello world!"
+    inputs = tokenizer.encode(text, max_length=5, truncation=True)
+    print(inputs)
+
     inputs = tokenizer.encode(text)
     print(inputs)
 
 
 if __name__ == '__main__':
-    transformers_tokenizer_multi_input()
+    transformer_tokenizer_max_len()

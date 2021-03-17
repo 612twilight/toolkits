@@ -103,11 +103,13 @@ def version_1():
     print(using_packed_res)
 
     mix_index = [0, 2, 1]
+    print("输入序列长度")
+    print(seq_lengths[mix_index])
     using_packed_res = rnn_forwarder(rnn, x[mix_index], seq_lengths[mix_index], enforce_sorted=False)
-    print("混淆了长度")
+    print("输出的就是我们输入的长度，乱序的，也是我们需要的")
     print(using_packed_res)
-    print("还原回原长度，注意这里与混淆长度后的rnn输入的不同")
-    print(using_packed_res[mix_index])
+    # print("还原回原长度，注意这里与混淆长度后的rnn输入的不同")
+    # print(using_packed_res[mix_index])
 
     # 不使用 pack_paded, 用来和上面的结果对比一下.
     not_packed_res, _ = rnn(x)
@@ -184,5 +186,29 @@ def version_3():
     print(result)
 
 
+def correct_yanshi():
+    """
+    正确使用方法
+    """
+    import random
+    feat_size = 100
+    hidden_size = 100
+    bsz = 500
+    max_length = 200
+    rnn = nn.GRU(input_size=feat_size,
+                 hidden_size=hidden_size, batch_first=True, bidirectional=True)
+    embedding = torch.randn(bsz, max_length, feat_size)
+    lengths = list(sorted([random.randint(1, max_length) for i in range(bsz)], reverse=True))
+    packed_inputs = nn.utils.rnn.pack_padded_sequence(embedding,
+                                                      lengths,
+                                                      batch_first=True, enforce_sorted=True)
+    print(packed_inputs)
+    res, state = rnn(packed_inputs)
+    print(res)
+
+    padded_res, _ = nn.utils.rnn.pad_packed_sequence(res, batch_first=True)
+    print(padded_res)
+
+
 if __name__ == "__main__":
-    version_1()
+    correct_yanshi()
