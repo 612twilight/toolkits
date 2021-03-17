@@ -210,5 +210,30 @@ def correct_yanshi():
     print(padded_res)
 
 
+def correct_yanshi2():
+    """
+    正确使用方法,不需要有序
+    """
+    import random
+    feat_size = 100
+    hidden_size = 100
+    bsz = 500
+    max_length = 200
+    rnn = nn.GRU(input_size=feat_size,
+                 hidden_size=hidden_size, batch_first=True, bidirectional=True)
+    embedding = torch.randn(bsz, max_length, feat_size)
+    lengths = [random.randint(1, max_length) for i in range(bsz)]  # 可以无序
+    packed_inputs = nn.utils.rnn.pack_padded_sequence(embedding,
+                                                      lengths,
+                                                      batch_first=True, enforce_sorted=False)
+    print(packed_inputs)
+    res, state = rnn(packed_inputs)
+    print(res)
+
+    padded_res, _ = nn.utils.rnn.pad_packed_sequence(res, batch_first=True, total_length=max_length)
+    # total_length 由于输入数据中可能每个数据都被padding了，所以这里如果想要补全，需要提供补全到的长度
+    print(padded_res)
+
+
 if __name__ == "__main__":
     correct_yanshi()
