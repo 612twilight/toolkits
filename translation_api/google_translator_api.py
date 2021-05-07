@@ -93,7 +93,7 @@ def simple_demo():
     """
     text = "你好，谷歌"
     origin = "zh-CN"
-    to = "en"
+    # to = "en"
     to = "ug"
     translate_res = translate(text, origin, to)
     dic = {}
