@@ -49,11 +49,6 @@ def threeD_permute():
     permute_hn_first_seq = permute_hn[:, 0, :]
 
     assert hn_first_seq.equal(permute_hn_first_seq)
-
-    那这时候的操作可以是：
-    permute_hn = hn.permute(1, 0, 2).contiguous()
-    transform = permute_hn.view((3, 6))
-    assert transform.equal(target)  # True
     """
     print("===============threeD test begin==============")
     hn = torch.tensor(np.array([[[111, 112, 113], [121, 122, 123], [131, 132, 133]],
