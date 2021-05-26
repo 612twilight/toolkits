@@ -112,7 +112,7 @@ class MultiheadAttention(nn.Module):
         assert embed_dim == self.embed_dim
         assert list(query.size()) == [tgt_len, bsz, embed_dim]
 
-        if self.enable_torch_version and not self.onnx_trace and incremental_state is None and not static_kv:
+        if incremental_state is None and not static_kv:
             return F.multi_head_attention_forward(query, key, value,
                                                   self.embed_dim, self.num_heads,
                                                   torch.empty([0]),
@@ -125,8 +125,6 @@ class MultiheadAttention(nn.Module):
                                                   q_proj_weight=self.q_proj.weight,
                                                   k_proj_weight=self.k_proj.weight,
                                                   v_proj_weight=self.v_proj.weight)
-
-        saved_state = None
 
         if self.self_attention:
             q = self.q_proj(query)
@@ -163,7 +161,6 @@ class MultiheadAttention(nn.Module):
             k = k.contiguous().view(-1, bsz * self.num_heads, self.head_dim).transpose(0, 1)
         if v is not None:
             v = v.contiguous().view(-1, bsz * self.num_heads, self.head_dim).transpose(0, 1)
-
 
         src_len = k.size(1)
 
@@ -232,3 +229,33 @@ class MultiheadAttention(nn.Module):
             attn_weights = None
 
         return attn, attn_weights
+
+
+# def self_atten_demo():
+#     embedding_dim = 512
+#     num_embeddings = 1000
+#     num_heads = 8
+#     self_attn = MultiheadAttention(embed_dim=embedding_dim, num_heads=num_heads, dropout=0, self_attention=True)
+#     embedding = torch.nn.Embedding(num_embeddings=num_embeddings, embedding_dim=embedding_dim)
+#     bsz = 10
+#     max_seq = 100
+#     padding_idx = 0
+#     token_ids = []
+#     for i in range(bsz):
+#         one_sent =
+#
+#
+#
+#
+#
+#     token_ids = torch.arange(bsz * max_seq).view(bsz, max_seq)
+#     encoder_padding_mask = token_ids.eq(padding_idx)
+#     if not encoder_padding_mask.any():
+#         encoder_padding_mask = None
+#     x = embedding(token_ids)
+#     x, _ = self_attn(query=x, key=x, value=x, key_padding_mask=encoder_padding_mask)
+#     print(x)
+
+
+if __name__ == '__main__':
+    self_atten_demo()
