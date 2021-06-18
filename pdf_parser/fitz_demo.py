@@ -15,8 +15,10 @@ import fitz
 def read_pdf():
     type_read = "raw_dict"
     pdf_path = "pdf_parser/中华行两全保险.pdf"
+    pdf_path = "E:\dl_lab_toolkits\datasets\ccks2021面向保险领域的低资源文档信息抽取\训练集\中国人民人寿保险股份有限公司\健康保险-非个人税收优惠型健康保险-疾病保险-重大疾病保险\人保寿险附加金色前程少儿重大疾病保险  .pdf"
     doc = fitz.open(pdf_path)
     nums = doc.page_count
+    writer = open("tmp.txt", 'w', encoding='utf8')
     for i in range(nums):
         page = doc[i]
         if type_read == "dict":
@@ -57,7 +59,10 @@ def read_pdf():
                         size = span["size"]
                         chars = span["chars"]
                         for char in chars:
+                            writer.write(str([char["bbox"], char["c"], font, size]) + "\n")
                             print("bbox:{}\tword:{}\tfont:{}\tsize:{}".format(char["bbox"], char["c"], font, size))
+    writer.flush()
+    writer.close()
 
 
 if __name__ == '__main__':
