@@ -28,7 +28,7 @@ def recu_list_dirs_by_dictionary_order(path, indent=0, maxi=-1, only_dir=True):
                 full_path = os.path.join(path, item)
                 if os.path.isdir(full_path):
                     print(' ' * indent, '+', item)
-                    recu_list_dirs_by_dictionary_order(full_path, indent + 4, maxi - 1)
+                    recu_list_dirs_by_dictionary_order(full_path, indent + 4, maxi - 1, only_dir)
                 if not only_dir and os.path.isfile(full_path):
                     print(' ' * indent, '-', item)
 

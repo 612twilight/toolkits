@@ -5,6 +5,7 @@ Project Name: toolkits
 File Name: tokenization_demo.py
 Author: gaoyw
 Create Date: 2021/3/8
+transformers           3.1.0
 -------------------------------------------------
 """
 from transformers import AutoTokenizer, AutoModel
@@ -108,5 +109,48 @@ def transformer_tokenizer_max_len():
     print(inputs)
 
 
+def token_classification_align():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    inputs = tokenizer(text="你好，世界！", text_pair="Hello world!", return_tensors="pt", padding="max_length", max_length=512)
+    print(inputs)
+
+    outputs = model(**inputs)  # 这里是bert-base，输出的是BaseModelOutputWithPooling
+    """
+    last_hidden_state (:obj:`torch.FloatTensor` of shape :obj:`(batch_size, sequence_length, hidden_size)`):
+            Sequence of hidden-states at the output of the last layer of the model.
+    pooler_output (:obj:`torch.FloatTensor` of shape :obj:`(batch_size, hidden_size)`):
+        Last layer hidden-state of the first token of the sequence (classification token)
+        further processed by a Linear layer and a Tanh activation function. The Linear
+        layer weights are trained from the next sentence prediction (classification)
+        objective during pretraining.
+    """
+    print(outputs[0].size())  # torch.Size([1, 11, 768])  last_hidden_state
+    print(outputs[1].size())  # torch.Size([1, 768])  pooler_output  在第一个[CLS]上加入了全连接激活，作为句子特征
+
+
+def special_input():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    inputs = tokenizer(text="你好，世界！", text_pair="Hello world!", return_tensors="pt", padding="max_length", max_length=512)
+    print(inputs)
+
+    def model_input(**x):
+        print(x)
+        outputs = model(**x)  # 这里是bert-base，输出的是BaseModelOutputWithPooling
+        """
+        last_hidden_state (:obj:`torch.FloatTensor` of shape :obj:`(batch_size, sequence_length, hidden_size)`):
+                Sequence of hidden-states at the output of the last layer of the model.
+        pooler_output (:obj:`torch.FloatTensor` of shape :obj:`(batch_size, hidden_size)`):
+            Last layer hidden-state of the first token of the sequence (classification token)
+            further processed by a Linear layer and a Tanh activation function. The Linear
+            layer weights are trained from the next sentence prediction (classification)
+            objective during pretraining.
+        """
+        print(outputs[0].size())  # torch.Size([1, 11, 768])  last_hidden_state
+        print(outputs[1].size())  # torch.Size([1, 768])  pooler_output  在第一个[CLS]上加入了全连接激活，作为句子特征
+    model_input(**inputs)
+
+
 if __name__ == '__main__':
-    transformer_tokenizer_max_len()
+    special_input()
