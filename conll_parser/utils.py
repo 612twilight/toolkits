@@ -110,6 +110,10 @@ def convert_parsed_info2bieo(parsed_infos):
             last_index = len(entity_sent) - 1
             for index, word in enumerate(entity_sent):
                 words.append(word)
+                tag = entities[entity_index]
+                if tag == "O":
+                    tags.append("O")
+                    continue
                 if index == 0:
                     tags.append("B-" + entities[entity_index])
                 elif index == last_index:
@@ -135,7 +139,7 @@ def task_transposebieo2bieo():
     file_path = "C:/Users\FH\Downloads/随时准备合并_addr_parsing_runid_bert_2021626729.txt"
     with open(file_path, "r", encoding='utf8') as reader:
         lines = reader.readlines()
-    writer = open("C:/Users\FH\Downloads/随时准备合并_addr_parsing_runid_bert_2021626729_2.txt", "w",
+    writer = open("C:/Users\FH\Downloads/随时准备合并_addr_parsing_runid.txt", "w",
                   encoding="utf8")
     for line in tqdm(lines):
         idx, words, tags = line.strip().split("\u0001")
