@@ -112,7 +112,8 @@ def transformer_tokenizer_max_len():
 def token_classification_align():
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
     model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
-    inputs = tokenizer(text="你好，世界！", text_pair="Hello world!", return_tensors="pt", padding="max_length", max_length=512)
+    inputs = tokenizer(text="你好，世界！", text_pair="Hello world!", return_tensors="pt", padding="max_length",
+                       max_length=512)
     print(inputs)
 
     outputs = model(**inputs)  # 这里是bert-base，输出的是BaseModelOutputWithPooling
@@ -132,7 +133,7 @@ def token_classification_align():
 def special_input():
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
     model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
-    inputs = tokenizer(text="你好，世界！", text_pair="Hello world!", return_tensors="pt", padding="max_length", max_length=512)
+    inputs = tokenizer(text="北京市朝阳区广渠路00号院甲000(珠江帝景东北角底商)", return_tensors="pt", padding="max_length", max_length=512)
     print(inputs)
 
     def model_input(**x):
@@ -149,8 +150,63 @@ def special_input():
         """
         print(outputs[0].size())  # torch.Size([1, 11, 768])  last_hidden_state
         print(outputs[1].size())  # torch.Size([1, 768])  pooler_output  在第一个[CLS]上加入了全连接激活，作为句子特征
+
     model_input(**inputs)
 
 
+def convert_inputs():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    # inputs = tokenizer(text="北京市朝阳区广渠路00号院甲000(珠江帝景东北角底商)", return_tensors="pt", padding="max_length", max_length=512)
+    inputs = "北京市朝阳区广渠路00号院甲0000(珠江帝景东北角底商)"
+    inputs = " ".join("北京市朝阳区广渠路00号院甲0000(珠江帝景东北角底商)")
+    reslt = tokenizer.clean_up_tokenization(inputs)
+    print(reslt)
+    bert_out = tokenizer(text=inputs, return_tensors="pt", padding="max_length", max_length=512)
+    print(bert_out)
+    result = tokenizer.convert_tokens_to_ids([word for word in inputs])
+    print(result)
+    print(tokenizer.convert_ids_to_tokens(result))
+    result = tokenizer.convert_ids_to_tokens(bert_out["input_ids"][0])
+    print(result)
+
+    tokens = [word for word in inputs]
+    if len(tokens) > 510:
+        tokens = tokens[:510]
+    tokens = ["[CLS]"] + tokens + ["[SEP]"]
+    token_ids = tokenizer.convert_tokens_to_ids(tokens)
+    print(token_ids)
+    len_tokens = len(token_ids)
+    input_ids = token_ids + [tokenizer.pad_token_id] * (512 - len_tokens)
+    token_type_ids = [0] * 512
+    attention_mask = [1] * len_tokens + [0] * (512 - len_tokens)
+    print("==========================")
+    print(input_ids)
+    print(bert_out["input_ids"][0].numpy().tolist())
+    assert input_ids == bert_out["input_ids"][0].numpy().tolist()
+    assert token_type_ids == bert_out["token_type_ids"][0].numpy().tolist()
+    assert attention_mask == bert_out["attention_mask"][0].numpy().tolist()
+    print(input_ids)
+    print(token_type_ids)
+    print(attention_mask)
+
+
+def less_length_bert():
+    """
+    bert 可以输入低于512的字符串
+    """
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    inputs = tokenizer(text="北京市朝阳区广渠路00号院甲000(珠江帝景东北角底商)", return_tensors="pt", padding=True)
+    print(inputs)
+    result = model(**inputs)
+    print(result[0])
+    print(result[1])
+
+    inputs = tokenizer(text="北京市朝阳区广渠路00号院甲000(珠江帝景东北角底商)", return_tensors="pt", padding="max_length", max_length=512)
+    result = model(**inputs)
+    print(result[0])
+    print(result[1])
+
+
 if __name__ == '__main__':
-    special_input()
+    less_length_bert()
