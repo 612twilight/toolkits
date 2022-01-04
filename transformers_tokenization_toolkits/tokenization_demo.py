@@ -208,5 +208,29 @@ def less_length_bert():
     print(result[1])
 
 
+def pair_tokenization():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    inputs = tokenizer(text=["北京市朝阳区广渠路00号院甲000", "珠江帝景东北角底商"],
+                       text_pair=["北京市朝阳区广渠路00号院甲000", "珠江帝景东北角底商"],
+                       return_tensors="pt", padding=True)  # 形成句子对
+    print(inputs["input_ids"])
+    print(inputs["token_type_ids"])
+    print(inputs["attention_mask"])
+
+    model = AutoModel.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    result = model(**inputs)
+    print(result[0].size())
+    print(result[1].size())
+
+
+def trancation_tokenizer():
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path="E:\models/transformers/bert-base-chinese")
+    inputs = tokenizer(text=["北京市朝阳区广渠路00号院甲000", "sadas"],
+                       return_tensors="pt", padding=True, max_length=10, truncation=True)  # 形成句子对
+    print(inputs)
+    print(tokenizer.convert_ids_to_tokens(inputs["input_ids"][0]))
+    print(tokenizer.convert_ids_to_tokens(inputs["input_ids"][1]))
+
+
 if __name__ == '__main__':
-    less_length_bert()
+    trancation_tokenizer()

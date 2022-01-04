@@ -23,5 +23,14 @@ def select_op():
     print(select_result)
 
 
+def select_op2():
+    src_tokens = torch.arange(0, 3 * 4).view(3, 4)
+    print(src_tokens)
+    index = src_tokens[:, None, :]
+    print(index.size())
+    index = index.expand(3, 5,4)
+    print(index)
+
+
 if __name__ == '__main__':
-    select_op()
+    select_op2()
